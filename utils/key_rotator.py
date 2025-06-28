@@ -24,13 +24,15 @@ class PersistentKeyRotator:
             logger.error(f"[KeyRotator] Failed to read index: {e}")
             return 0
 
-    def get_next_key_index(self) -> int:
+    def get_next_key(self) -> str:
         index = self.get_current_index()
         new_index = 1 - index
+
         try:
             with open(self.index_file, "w") as f:
                 json.dump({"index": new_index}, f)
             logger.info(f"[KeyRotator] Switched key index from {index} to {new_index}")
         except Exception as e:
             logger.error(f"[KeyRotator] Failed to write new index: {e}")
-        return index
+
+        return self.keys[index]

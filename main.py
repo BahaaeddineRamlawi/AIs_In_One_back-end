@@ -5,6 +5,12 @@ import asyncio
 from logger import logger
 from llm import get_model_chains
 
+import warnings
+from langchain_core._api.deprecation import LangChainDeprecationWarning
+
+warnings.filterwarnings("ignore", category=LangChainDeprecationWarning)
+
+
 app = FastAPI()
 
 app.add_middleware(
