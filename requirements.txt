@@ -8,6 +8,7 @@ langchain-community==0.3.26
 langchain-google-genai==2.1.5
 langchain-mistralai==0.2.10
 langchain-cohere==0.4.4
+langchain_openai==0.3.27
 
 openai==1.93.0
 google-ai-generativelanguage==0.6.18
