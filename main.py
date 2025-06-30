@@ -5,7 +5,7 @@ import warnings
 
 from logger import logger
 from llm import get_model_chains
-from image_gen import generate_image_base64
+from image_gen import generate_images_all_models
 
 from langchain_core._api.deprecation import LangChainDeprecationWarning
 warnings.filterwarnings("ignore", category=LangChainDeprecationWarning)
@@ -18,9 +18,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-from keep_alive import keep_alive
-keep_alive()
 
 @app.post("/api/chat")
 async def chat_endpoint(request: Request):
@@ -54,10 +51,23 @@ async def generate_image_endpoint(request: Request):
         return {"error": "Missing prompt"}
 
     try:
-        image_b64 = generate_image_base64(prompt)
-        image_data_uri = f"data:image/png;base64,{image_b64}"
-        return {"imageUrl": image_data_uri}
+        images = generate_images_all_models(prompt)
+
+        gemini_data_uri = None
+        if images.get("gemini_base64"):
+            gemini_data_uri = f"data:image/png;base64,{images['gemini_base64']}"
+
+        return {
+            "images": {
+                "gemini_base64": gemini_data_uri,
+                "dalle_urls": images.get("dalle_urls", []),
+                "imagen_urls": images.get("imagen_urls", []),
+                "flux_urls": images.get("flux_urls", []),
+            }
+        }
     except Exception as e:
         return {"error": str(e)}
-    
-    # xhQX8dESAeSInIb7LVemOB3KxmjIcQuJYUxHhEjJWlRwug3pS9m6c6VDXfLk
+
+@app.get("/api/wake")
+async def wake_server():
+    return {"status": "awake"}
