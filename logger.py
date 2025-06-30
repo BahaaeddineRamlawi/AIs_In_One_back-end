@@ -1,4 +1,5 @@
 import os
+import sys
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
@@ -10,13 +11,17 @@ def setup_logger(name="chatbot_logger", log_dir="logs", log_file_name="chatbot.l
     logger.setLevel(logging.INFO)
 
     if not logger.hasHandlers():
-        handler = TimedRotatingFileHandler(
-            log_file, when="midnight", interval=1, backupCount=7
+        file_handler = TimedRotatingFileHandler(
+            log_file, when="midnight", interval=1, backupCount=7, encoding="utf-8"
         )
-        handler.suffix = "%Y-%m-%d.log"
-        formatter = logging.Formatter("%(asctime)s | %(levelname)s | %(message)s")
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
+        file_handler.suffix = "%Y-%m-%d.log"
+        file_formatter = logging.Formatter("%(asctime)s | %(levelname)s | %(message)s")
+        file_handler.setFormatter(file_formatter)
+        logger.addHandler(file_handler)
+
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setFormatter(file_formatter)
+        logger.addHandler(console_handler)
 
     return logger
 
